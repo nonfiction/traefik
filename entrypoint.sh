@@ -3,11 +3,10 @@ set -e
 
 # https://github.com/containous/traefik-library-image/blob/master/alpine/entrypoint.sh
 # nf - ensure private key exists where it should
-while :; do
-  [ -f /root/.ssh/id_rsa ] && break
-  [ -f /run/secrets/root_private_key ] && cp /run/secrets/root_private_key /root/.ssh/id_rsa && chmod 400 /root/.ssh/id_rsa
-  sleep 1
-done
+eval $(ssh-agent -s)
+[ -f /run/secrets/root_private_key ] && cp /run/secrets/root_private_key /root/.ssh/id_rsa 
+touch /root/.ssh/id_rsa && chmod 400 /root/.ssh/id_rsa
+ssh-add ~/.ssh/id_rsa
 # /nf
 
 # first arg is `-f` or `--some-option`
