@@ -3,14 +3,19 @@ set -e
 
 # https://github.com/containous/traefik-library-image/blob/master/alpine/entrypoint.sh
 # nf 
-# set DO_AUTH_TOKEN from docker secret
+
+# env variables from docker secrets (if exists)
 [ -f /run/secrets/do_auth_token ] && export DO_AUTH_TOKEN=$(cat /run/secrets/do_auth_token) 
-# ensure private key exists where it should
-[ -f /run/secrets/root_private_key ] && cp /run/secrets/root_private_key /root/.ssh/id_rsa 
+[ -f /run/secrets/root_private_key ] && export ROOT_PRIVATE_KEY=$(cat /run/secrets/root_private_key) 
+
+# decode ssh key and save to file with proper permissions
+echo "$ROOT_PRIVATE_KEY" | base64 -d > /root/.ssh/id_rsa
 touch /root/.ssh/id_rsa && chmod 400 /root/.ssh/id_rsa
+
 # add key to ssh-agent
 eval $(ssh-agent -s)
 ssh-add ~/.ssh/id_rsa
+
 # /nf
 
 # first arg is `-f` or `--some-option`
