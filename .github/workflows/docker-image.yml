@@ -27,7 +27,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: nonfiction/traefik:latest
+          tags: nonfiction/traefik:v1
       -
         name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
